@@ -1,40 +1,38 @@
-import {AvatarDropdown, AvatarName, Footer, Question} from '@/components';
-import {LinkOutlined} from '@ant-design/icons';
-import {SettingDrawer} from '@ant-design/pro-components';
-import type {RunTimeLayoutConfig} from '@umijs/max';
-import {Link, history} from '@umijs/max';
-import {requestConfig} from './requestConfig';
-import {getLoginUserUsingGet} from "@/services/zsmx-backend/userController";
+import { AvatarDropdown, AvatarName, Footer, Question } from '@/components';
+import { getLoginUserUsingGet } from '@/services/zsmx-backend/userController';
+import { LinkOutlined } from '@ant-design/icons';
+import { SettingDrawer } from '@ant-design/pro-components';
+import type { RunTimeLayoutConfig } from '@umijs/max';
+import { Link, history } from '@umijs/max';
+import defaultSettings from '../config/defaultSettings';
+import { requestConfig } from './requestConfig';
 
 const isDev = process.env.NODE_ENV === 'development';
 const loginPath = '/user/login';
 
 export async function getInitialState(): Promise<InitialState> {
-
-//  首次加载页面时，获取全局保存的数据，比如用户登录信息
-const state: InitialState = {
-  loginUser: undefined,
-}
-try {
+  //  首次加载页面时，获取全局保存的数据，比如用户登录信息
+  const state: InitialState = {
+    loginUser: undefined,
+  };
+  try {
     const res = await getLoginUserUsingGet();
     if (res.data) {
-      state.loginUser = res.data
+      state.loginUser = res.data;
     }
+  } catch (error) {
+    history.push(loginPath);
+  }
+  return state;
 }
-  catch (error) {
-      history.push(loginPath);
-    }
-    return state;
-  };
-
 
 // ProLayout 支持的api https://procomponents.ant.design/components/layout
-export const layout: RunTimeLayoutConfig = ({initialState, setInitialState}) => {
+export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) => {
   return {
-    actionsRender: () => [<Question key="doc"/>],
+    actionsRender: () => [<Question key="doc" />],
     avatarProps: {
       src: initialState?.loginUser?.userAvatar,
-      title: <AvatarName/>,
+      title: <AvatarName />,
       render: (_, avatarChildren) => {
         return <AvatarDropdown>{avatarChildren}</AvatarDropdown>;
       },
@@ -42,9 +40,9 @@ export const layout: RunTimeLayoutConfig = ({initialState, setInitialState}) => 
     waterMarkProps: {
       content: initialState?.loginUser?.userName,
     },
-    footerRender: () => <Footer/>,
+    footerRender: () => <Footer />,
     onPageChange: () => {
-      const {location} = history;
+      const { location } = history;
       // 如果没有登录，重定向到 login
       if (!initialState?.loginUser && location.pathname !== loginPath) {
         history.push(loginPath);
@@ -72,11 +70,11 @@ export const layout: RunTimeLayoutConfig = ({initialState, setInitialState}) => 
     ],
     links: isDev
       ? [
-        <Link key="openapi" to="/umi/plugin/openapi" target="_blank">
-          <LinkOutlined/>
-          <span>OpenAPI 文档</span>
-        </Link>,
-      ]
+          <Link key="openapi" to="/umi/plugin/openapi" target="_blank">
+            <LinkOutlined />
+            <span>OpenAPI 文档</span>
+          </Link>,
+        ]
       : [],
     menuHeaderRender: undefined,
     // 自定义 403 页面
@@ -91,7 +89,7 @@ export const layout: RunTimeLayoutConfig = ({initialState, setInitialState}) => 
             <SettingDrawer
               disableUrlParams
               enableDarkTheme
-              settings={initialState?.settings}
+              settings={defaultSettings}
               onSettingChange={(settings) => {
                 setInitialState((preInitialState) => ({
                   ...preInitialState,
@@ -103,7 +101,7 @@ export const layout: RunTimeLayoutConfig = ({initialState, setInitialState}) => 
         </>
       );
     },
-    ...initialState?.settings,
+    defaultSettings,
   };
 };
 
