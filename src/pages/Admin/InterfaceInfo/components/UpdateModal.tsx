@@ -39,7 +39,7 @@ const UpdateModal: React.FC<Props> = (props) => {
     // 创建一个Modal组件,通过visible属性控制其显示或隐藏,footer设置为null把表单项的'取消'和'确认'按钮去掉
     <Modal visible={visible} footer={null} onCancel={() => onCancel?.()}>
       {/* 创建一个ProTable组件,设定它为表单类型,将表单实例绑定到ref,通过columns属性设置表格的列，提交表单时调用onSubmit函数 */}
-      {JSON.stringify(values)}
+      {/*{JSON.stringify(values)}*/}
       <ProTable
         type="form"
         formRef={formRef}
